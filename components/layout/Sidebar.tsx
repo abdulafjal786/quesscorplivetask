@@ -17,10 +17,10 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Employees', href: '/employee', icon: Users },
   { name: 'Attendance', href: '/attendance', icon: Clock },
-  { name: 'Departments', href: '/departments', icon: Building2 },
-  { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Departments', href: '/', icon: Building2 },
+  { name: 'Calendar', href: '/', icon: Calendar },
+  { name: 'Analytics', href: '/', icon: BarChart3 },
+  { name: 'Settings', href: '/', icon: Settings },
 ]
 
 export default function Sidebar() {
