@@ -1,6 +1,6 @@
 import { Employee, ApiResponse, ApiSearchEmployee } from './types'
 
-const API_BASE_URL = process.env.DJANGO_API_URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 // const API_BASE_URL = 'http://127.0.0.1:8000'
 
 // Map API response to your Employee type
