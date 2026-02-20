@@ -1,65 +1,202 @@
-import Image from "next/image";
+import { Metadata } from 'next'
+import { Suspense } from 'react'
+import EmployeeStats from '@/components/employees/EmployeeStats'
+// import AddEmployeeModal from '@/components/employees/AddEmployeeModal'
+import SearchFilters from '@/components/employees/SearchFilters'
+// import { getEmployees } from '@/lib/api'
+import LoadingSpinner from '@/components/shared/LoadingSpinner'
+import { Card } from '@/components/ui/Card'
+import { Users, Calendar, Filter, Download } from 'lucide-react'
+import EmployeesTableComponent from '@/components/employees/EmployeesTable'
+import {Button} from '../components/ui/Button'
+import { getEmployees } from '@/lib/api'
 
-export default function Home() {
+
+
+export const metadata: Metadata = {
+  title: 'Dashboard | Employee Management',
+  description: 'Employee dashboard with search and filters',
+}
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const { data: employees, error } = await getEmployees()
+
+
+  
+  // Extract filter params from URL
+  // const searchQuery = typeof searchParams.search === 'string' ? searchParams.search : ''
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Employee Dashboard</h1>
+          <p className="text-gray-600">
+            Manage, search, and filter all employees in your organization
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        
+        <div className="flex items-center gap-3">
+          <Button  className="gap-2">
+            <Calendar className="h-4 w-4" />
+            Export Report
+          </Button>
+          <Button className="gap-2">
+            <Download className="h-4 w-4" />
+            Download Data
+          </Button>
         </div>
-      </main>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Employees</p>
+              <p className="mt-2 text-2xl font-bold text-gray-900">{employees?.length || 0}</p>
+              <p className="mt-1 text-sm text-green-600">+12% from last month</p>
+            </div>
+            <div className="rounded-lg bg-blue-500 p-3">
+              <Users className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Active Today</p>
+              <p className="mt-2 text-2xl font-bold text-gray-900">42</p>
+              <p className="mt-1 text-sm text-gray-500">85% attendance rate</p>
+            </div>
+            <div className="rounded-lg bg-green-500 p-3">
+              <Users className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">On Leave</p>
+              <p className="mt-2 text-2xl font-bold text-gray-900">8</p>
+              <p className="mt-1 text-sm text-yellow-600">2 scheduled returns</p>
+            </div>
+            <div className="rounded-lg bg-yellow-500 p-3">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">New This Month</p>
+              <p className="mt-2 text-2xl font-bold text-gray-900">5</p>
+              <p className="mt-1 text-sm text-blue-600">2 pending onboarding</p>
+            </div>
+            <div className="rounded-lg bg-purple-500 p-3">
+              <Filter className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Search & Filters Section */}
+      <Card className="p-6">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900">Search & Filter Employees</h2>
+          <p className="text-sm text-gray-600">
+            Find employees by name, email, department, or hire date range
+          </p>
+        </div>
+        
+        {/* <SearchFilters 
+          initialSearch={searchQuery}
+          /> */}
+      </Card>
+
+      {/* Employees Table Section */}
+      <Card className="p-6">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900">Employee Directory</h2>
+          <p className="text-sm text-gray-600">
+            View all employees with their contact information and details
+          </p>
+        
+        </div>
+
+        {error ? (
+          <div className="text-center py-12">
+            <div className="text-red-600 font-medium">Error loading employees</div>
+            <p className="text-gray-600 mt-2">Please try again later</p>
+          </div>
+        ) : (
+          <Suspense fallback={<LoadingSpinner fullScreen={false} />}>
+            <EmployeesTableComponent 
+              employees={employees || []}
+              searchParams={searchParams}
+            />
+          </Suspense>
+        )}
+      </Card>
+
+      {/* Additional Stats */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Department Distribution</h3>
+          <EmployeeStats employees={employees || []} />
+        </Card>
+        
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+          <div className="space-y-4">
+            {/* {employees?.slice(0, 4).map((employee) => (
+              <div key={employee.id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <span className="font-medium text-gray-700">
+                      {employee.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{employee.name}</p>
+                    <p className="text-sm text-gray-500">{employee.department}</p>
+                  </div>
+                </div>
+                <span className="text-sm text-gray-500">
+                  Hired {new Date(employee.hireDate).toLocaleDateString()}
+                </span>
+              </div>
+            ))} */}
+          </div>
+        </Card>
+      </div>
     </div>
-  );
+  )
 }
+
+// 'use client'
+// import { Button } from "@/components/ui/Button";
+// import { Input } from "@/components/ui/Input";
+// import { useState } from "react";
+// // eslint-disable-next-line @next/next/no-async-client-component
+// export default async function HomePage() {
+//   // eslint-disable-next-line react-hooks/rules-of-hooks
+//   const [email, setEmail] = useState("");
+//   return (
+//     <div>
+//       <h1>Welcome to the Employee Management Dashboard</h1>
+//       <Input label="email" placeholder="email"  value={email} helperText=""/>
+//       <Button />
+      
+//     </div>
+//   )
+// }
+
