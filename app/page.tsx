@@ -1,15 +1,15 @@
+
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 import EmployeeStats from '@/components/employees/EmployeeStats'
-// import AddEmployeeModal from '@/components/employees/AddEmployeeModal'
-import SearchFilters from '@/components/employees/SearchFilters'
-// import { getEmployees } from '@/lib/api'
+
 import LoadingSpinner from '@/components/shared/LoadingSpinner'
 import { Card } from '@/components/ui/Card'
 import { Users, Calendar, Filter, Download } from 'lucide-react'
 import EmployeesTableComponent from '@/components/employees/EmployeesTable'
 import {Button} from '../components/ui/Button'
 import { getEmployees } from '@/lib/api'
+// import EmployeeDashboardClient from '@/components/employees/EmployeeDashboardClient'
 
 
 
@@ -28,7 +28,7 @@ export default async function HomePage({
 
   
   // Extract filter params from URL
-  // const searchQuery = typeof searchParams.search === 'string' ? searchParams.search : ''
+  const searchQuery = typeof searchParams.search === 'string' ? searchParams.search : ''
 
   return (
     <div className="space-y-6">
@@ -40,6 +40,7 @@ export default async function HomePage({
             Manage, search, and filter all employees in your organization
           </p>
         </div>
+        {/* <EmployeeDashboardClient searchParams={searchParams as { [key: string]: string | string[] | undefined }} /> */}
         
         <div className="flex items-center gap-3">
           <Button  className="gap-2">
@@ -141,7 +142,7 @@ export default async function HomePage({
           <Suspense fallback={<LoadingSpinner fullScreen={false} />}>
             <EmployeesTableComponent 
               employees={employees || []}
-              searchParams={searchParams}
+              // searchParams={searchParams}
             />
           </Suspense>
         )}

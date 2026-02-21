@@ -1,22 +1,17 @@
+
 import EmployeesTableComponent from "@/components/employees/EmployeesTable";
-import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import { Suspense } from "react";
+
 import { getEmployees } from "@/lib/api"; // Assuming you have this function
 import { Employee } from "@/lib/types";
 
-// Make this an async function since you'll fetch data
-export default async function EmployeePage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  // Fetch employees data
+export default async function EmployeePage() {
   let employees: Employee[] = [];
-  
+
   try {
     const result = await getEmployees();
     if (result.data) {
       employees = result.data;
+      console.log("Fetched employees:", employees);
     }
   } catch (error) {
     console.error("Failed to fetch employees:", error);
@@ -25,13 +20,7 @@ export default async function EmployeePage({
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Employee Management</h1>
-      
-      <Suspense fallback={<LoadingSpinner fullScreen={false} />}>
-        <EmployeesTableComponent 
-          employees={employees}
-          searchParams={searchParams}
-        />
-      </Suspense>
+      <EmployeesTableComponent employees={employees} />
     </div>
   );
 }

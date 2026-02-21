@@ -1,7 +1,8 @@
+
 import { Employee, ApiResponse, ApiSearchEmployee } from './types'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
-// const API_BASE_URL = 'http://127.0.0.1:8000'
+// const API_BASE_URL = process.env.DJANGO_API_URL
+const API_BASE_URL = 'http://13.233.178.226'
 
 // Map API response to your Employee type
 interface ApiEmployee {
@@ -36,7 +37,7 @@ function mapApiEmployeeToEmployee(apiEmployee: ApiEmployee): Employee {
 
 export async function getEmployees(): Promise<ApiResponse<Employee[]>> {
   try {
-    const response = await fetch(`${API_BASE_URL}/employee/employees/`, {
+    const response = await fetch(`${API_BASE_URL}/api/employee/employees/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ export async function getEmployee(id: string): Promise<ApiResponse<Employee>> {
   try {
     // Search for employee by employee_id
     const response = await fetch(
-      `${API_BASE_URL}/employee/employees/search/?search=${encodeURIComponent(id)}`,
+      `${API_BASE_URL}/api/employee/employees/search/?search=${encodeURIComponent(id)}`,
       {
         method: 'GET',
         headers: {
@@ -164,7 +165,7 @@ export async function createEmployee(data: {
   status?: string
 }): Promise<ApiResponse<Employee>> {
   try {
-    const response = await fetch(`${API_BASE_URL}/employee/employees/add/`, {
+    const response = await fetch(`${API_BASE_URL}/api/employee/employees/add/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -198,7 +199,7 @@ export async function createEmployee(data: {
 
 export async function updateEmployee(id: string, data: Partial<Employee>): Promise<ApiResponse<Employee>> {
   try {
-    const response = await fetch(`${API_BASE_URL}/employee/employees/${id}/`, {
+    const response = await fetch(`${API_BASE_URL}/api/employee/employees/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -240,7 +241,7 @@ export async function updateEmployee(id: string, data: Partial<Employee>): Promi
 
 export async function deleteEmployee(id: string): Promise<ApiResponse<void>> {
   try {
-    const response = await fetch(`${API_BASE_URL}/employee/employees/delete/${id}/`, {
+    const response = await fetch(`${API_BASE_URL}/api/employee/employees/delete/${id}/`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -284,7 +285,7 @@ function mapSearchEmployeeToEmployee(apiEmployee: ApiSearchEmployee): Employee {
 export async function searchEmployees(searchQuery: string): Promise<ApiResponse<Employee[]>> {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/employee/employees/search/?search=${encodeURIComponent(searchQuery)}`,
+      `${API_BASE_URL}/api/employee/employees/search/?search=${encodeURIComponent(searchQuery)}`,
       {
         method: 'GET',
         headers: {
@@ -334,7 +335,7 @@ export interface AttendanceData {
 
 export async function markAttendance(data: AttendanceData): Promise<ApiResponse<string>> {
   try {
-    const response = await fetch(`${API_BASE_URL}/employee/attendance/mark/`, {
+    const response = await fetch(`${API_BASE_URL}/api/employee/attendance/mark/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -392,32 +393,30 @@ export interface AttendanceRecord {
   status: 'present' | 'absent';
 }
 
-export async function getAttendanceByDate(date?: string): Promise<ApiResponse<AttendanceRecord[]>> {
-  try {
-    let url = `${API_BASE_URL}/employee/attendance/`
-    if (date) {
-      url += `?date=${date}`
-    }
+export async function getAttendanceByDate(
+  date?: string
+): Promise<ApiResponse<AttendanceRecord[]>> {
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    })
+  const params = new URLSearchParams()
+  if (date) params.append("date", date)
+
+  const url = `${API_BASE_URL}/api/employee/attendance/${params.toString() ? `?${params.toString()}` : ""}`
+
+  try {
+    const response = await fetch(url)
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.detail || 'Failed to fetch attendance records')
+      const errorText = await response.text()
+      throw new Error(`API Error ${response.status}: ${errorText}`)
     }
 
     const records: AttendanceRecord[] = await response.json()
-    console.log('Fetched attendance records:', records)
     return { data: records }
+
   } catch (error) {
-    console.error('Error fetching attendance:', error)
+    console.error("Attendance Fetch Error:", error)
     return {
-      error: error instanceof Error ? error.message : 'Failed to fetch attendance',
+      error: error instanceof Error ? error.message : "Unknown error"
     }
   }
 }
@@ -428,7 +427,7 @@ export const getAttendanceRecords = getAttendanceByDate
 // Get employee attendance history
 export async function getEmployeeAttendance(employeeId: string, startDate?: string, endDate?: string): Promise<ApiResponse<AttendanceRecord[]>> {
   try {
-    let url = `${API_BASE_URL}/employee/attendance/employee/${employeeId}/`
+    let url = `${API_BASE_URL}/api/employee/attendance/employee/${employeeId}/`
     
     const params = new URLSearchParams()
     if (startDate) params.append('start_date', startDate)

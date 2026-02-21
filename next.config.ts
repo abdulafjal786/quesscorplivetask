@@ -4,12 +4,13 @@ const nextConfig: NextConfig = {
   images: {
     domains: [],
   },
-  // output: "export",
+  output: "export",
+  // trailingSlash: true,
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "https://humhai.in/:path*",
+        destination: "http://13.233.178.226/:path*",
       },
     ];
   },

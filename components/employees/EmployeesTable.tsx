@@ -1,5 +1,5 @@
-'use client'
 
+'use client'
 import { useEffect, useState, Suspense } from 'react'
 import { Employee } from '../../lib/types'
 import { 
@@ -27,14 +27,13 @@ import React from 'react'
 
 interface EmployeesTableProps {
   employees: Employee[]
-  searchParams: {[key: string]: string | string[] | undefined}
 }
 
 type SortField = 'name' | 'email' | 'department' | 'hireDate' | 'salary'
 type SortDirection = 'asc' | 'desc'
 
 // Create a separate component for the content that uses useSearchParams
-function EmployeesTableContent({ employees, searchParams }: EmployeesTableProps) {
+function EmployeesTableContent({ employees }: EmployeesTableProps) {
   const searchParam = useSearchParams()
   const searchQuery = searchParam.get('search') || ''
   
@@ -68,7 +67,7 @@ function EmployeesTableContent({ employees, searchParams }: EmployeesTableProps)
     }
 
     handleSearch()
-  }, [searchQuery, employees])
+  }, [])
 
   // Sort employees based on current sort field and direction
   const sortedEmployees = [...displayEmployees].sort((a, b) => {
